@@ -13,7 +13,7 @@ public class FileReaderLineByLine {
 
     public List<String> GetFileLines() throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(fileName));
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         while (scanner.hasNextLine() ){
             String line = scanner.nextLine();

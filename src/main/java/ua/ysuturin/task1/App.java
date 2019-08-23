@@ -1,7 +1,9 @@
 package ua.ysuturin.task1;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -12,11 +14,10 @@ public class App
     public static void main( String[] args )
     {
         try {
-            List<String> lines = new FileReaderLineByLine("C:\\Users\\Admin\\Downloads\\1_gmivss5f.txt").GetFileLines();
+            String userDir= new File("resources/file.txt").getAbsolutePath();
+            List<String> lines = new FileReaderLineByLine(userDir).GetFileLines();
             H2DataBaseOperator dataBaseOperator = new H2DataBaseOperator();
-            dataBaseOperator.ConnectToDatabase();
-            dataBaseOperator.CreateResultTable();
-            dataBaseOperator.InitInsertStatement();
+            dataBaseOperator.InitDatabase();
             int i=0;
             for (String line:lines) {
                 List<String> words = new ArrayList<String>( Arrays.asList(line.split(" ")));

@@ -3,13 +3,16 @@ package ua.ysuturin.task1;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class H2DataBaseOperator {
     private Connection connection;
     private PreparedStatement insertStatement;
+    private boolean IsDatabaseInitialized = false;
 
-    public void ConnectToDatabase() throws ClassNotFoundException, SQLException {
+    public void InitDatabase() throws ClassNotFoundException, SQLException {
         try {
             Class.forName("org.h2.Driver");
             connection = DriverManager.getConnection(
@@ -17,14 +20,7 @@ public class H2DataBaseOperator {
                     "sa",
                     ""
             );
-        }catch (SQLException e){
-            connection.close();
-            throw e;
-        }
-    }
 
-    public void CreateResultTable() throws SQLException{
-        try {
             Statement statement = connection.createStatement();
             String query = "CREATE TABLE RESULTS " +
                     "(ID INTEGER NOT NULL, " +
@@ -32,16 +28,11 @@ public class H2DataBaseOperator {
                     " MAXNUM INTEGER, " +
                     " PRIMARY KEY (ID))";
             statement.execute(query);
-        }catch (SQLException e){
-            connection.close();
-            throw e;
-        }
-    }
 
-    public void InitInsertStatement()throws SQLException{
-        try {
-            String query = "INSERT INTO RESULTS (ID, MINNUM, MAXNUM) VALUES(?, ?, ?)";
+            query = "INSERT INTO RESULTS (ID, MINNUM, MAXNUM) VALUES(?, ?, ?)";
             insertStatement = connection.prepareStatement(query);
+
+            IsDatabaseInitialized = true;
         }catch (SQLException e){
             connection.close();
             throw e;
@@ -49,23 +40,43 @@ public class H2DataBaseOperator {
     }
 
     public void AppendReCord(int id, int min, int max) throws SQLException{
-        try {
-            insertStatement.setInt(1, id);
-            insertStatement.setInt(2, min);
-            insertStatement.setInt(3, max);
-            insertStatement.execute();
-        }catch (SQLException e){
-            connection.close();
-            throw e;
+        if(IsDatabaseInitialized)
+        {
+            try {
+                insertStatement.setInt(1, id);
+                insertStatement.setInt(2, min);
+                insertStatement.setInt(3, max);
+                insertStatement.execute();
+            }catch (SQLException e){
+                connection.close();
+                IsDatabaseInitialized=false;
+                throw e;
+            }
         }
+
     }
 
-    public void SelectRecords() throws SQLException{
-        Statement statement = connection.createStatement();
-        String query = "SELECT * FROM RESULTS";
-        ResultSet resultSet = statement.executeQuery(query);
-        while (resultSet.next()){
-            System.out.println("Id "+resultSet.getInt(1)+" MINNUM "+resultSet.getInt(2)+" MAXNUM "+resultSet.getInt(3));
+    public List<ResultEntity> SelectRecords() throws SQLException{
+        List<ResultEntity> result = new ArrayList<>();
+        if(IsDatabaseInitialized) {
+            try {
+                Statement statement = connection.createStatement();
+                String query = "SELECT * FROM RESULTS";
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    System.out.println("Id " + resultSet.getInt(1) +
+                            " MINNUM " + resultSet.getInt(2) +
+                            " MAXNUM " + resultSet.getInt(3));
+                    result.add(new ResultEntity(resultSet.getInt(1),
+                                                resultSet.getInt(2),
+                                                resultSet.getInt(3)));
+                }
+            }catch (SQLException e){
+                connection.close();
+                IsDatabaseInitialized=false;
+                throw e;
+            }
         }
+        return result;
     }
 }
