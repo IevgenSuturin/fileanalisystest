@@ -53,7 +53,7 @@ public class AppTest
     }
 
     @Test
-    public void allLinesStatisticsFileShouldBeAggregated(){
+    public void allLinesOfStatisticsFileShouldBeAggregated(){
         final int numGivenLines = 18;
         int numCalculatedLines = 0;
         try {
