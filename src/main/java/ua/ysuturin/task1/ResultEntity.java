@@ -2,8 +2,18 @@ package ua.ysuturin.task1;
 
 public class ResultEntity {
     private Integer Id;
-    private Integer maxNumber;
-    private Integer minNumber;
+    private Integer maxWordLength;
+    private Integer minWordLength;
+    private Integer lineLength;
+    private Double averageWordLength;
+
+    public ResultEntity(Integer id, Integer maxWordLength, Integer minWordLength, Integer lineLength, Double averageWordLength) {
+        Id = id;
+        this.maxWordLength = maxWordLength;
+        this.minWordLength = minWordLength;
+        this.lineLength = lineLength;
+        this.averageWordLength = averageWordLength;
+    }
 
     public Integer getId() {
         return Id;
@@ -13,25 +23,44 @@ public class ResultEntity {
         Id = id;
     }
 
-    public Integer getMaxNumber() {
-        return maxNumber;
+    public Integer getMaxWordLength() {
+        return maxWordLength;
     }
 
-    public void setMaxNumber(Integer maxNumber) {
-        this.maxNumber = maxNumber;
+    public void setMaxWordLength(Integer maxWordLength) {
+        this.maxWordLength = maxWordLength;
     }
 
-    public Integer getMinNumber() {
-        return minNumber;
+    public Integer getMinWordLength() {
+        return minWordLength;
     }
 
-    public void setMinNumber(Integer minNumber) {
-        this.minNumber = minNumber;
+    public void setMinWordLength(Integer minWordLength) {
+        this.minWordLength = minWordLength;
     }
 
-    public ResultEntity(Integer id, Integer maxNumber, Integer minNumber) {
-        Id = id;
-        this.maxNumber = maxNumber;
-        this.minNumber = minNumber;
+    public Integer getLineLength() {
+        return lineLength;
+    }
+
+    public void setLineLength(Integer lineLength) {
+        this.lineLength = lineLength;
+    }
+
+    public Double getAverageWordLength() {
+        return averageWordLength;
+    }
+
+    public void setAverageWordLength(Double averageWordLength) {
+        this.averageWordLength = averageWordLength;
+    }
+
+    @Override
+    public String toString() {
+        return  "Id=" + Id +
+                ", maxWordLength=" + maxWordLength +
+                ", minWordLength=" + minWordLength +
+                ", lineLength=" + lineLength +
+                ", averageWordLength=" + averageWordLength ;
     }
 }

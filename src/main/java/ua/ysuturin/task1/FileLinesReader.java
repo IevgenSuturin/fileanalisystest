@@ -3,11 +3,13 @@ package ua.ysuturin.task1;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class FileReaderLineByLine {
+public class FileLinesReader {
     private String fileName;
 
-    public FileReaderLineByLine(String fileName) {
+    public FileLinesReader(String fileName) {
         this.fileName = fileName;
     }
 

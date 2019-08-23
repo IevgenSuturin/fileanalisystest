@@ -1,9 +1,7 @@
 package ua.ysuturin.task1;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -15,17 +13,17 @@ public class App
     {
         try {
             String userDir= new File("resources/file.txt").getAbsolutePath();
-            List<String> lines = new FileReaderLineByLine(userDir).GetFileLines();
+            List<String> lines = new FileLinesReader(userDir).GetFileLines();
             H2DataBaseOperator dataBaseOperator = new H2DataBaseOperator();
             dataBaseOperator.InitDatabase();
-            int i=0;
             for (String line:lines) {
-                List<String> words = new ArrayList<String>( Arrays.asList(line.split(" ")));
-                OptionalInt maxLength = words.stream().mapToInt(String::length).max();
-                OptionalInt minLength = words.stream().mapToInt(String::length).min();
-                dataBaseOperator.AppendReCord(++i, minLength.orElse(0), maxLength.orElse(0));
+                LineStatistics lineStatistics = new LineStatistics(line);
+                dataBaseOperator.AppendReCord(lineStatistics);
             }
-            dataBaseOperator.SelectRecords();
+            for (ResultEntity entity:dataBaseOperator.SelectRecords()) {
+                System.out.println(entity.toString());
+            };
+            dataBaseOperator.FinalizeDatabase();
         }catch ( ClassNotFoundException | SQLException | IOException e){
             System.out.println(e.getMessage());
         }

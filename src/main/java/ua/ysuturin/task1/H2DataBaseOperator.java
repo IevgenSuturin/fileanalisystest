@@ -1,11 +1,8 @@
 package ua.ysuturin.task1;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class H2DataBaseOperator {
     private Connection connection;
@@ -24,32 +21,38 @@ public class H2DataBaseOperator {
             Statement statement = connection.createStatement();
             String query = "CREATE TABLE RESULTS " +
                     "(ID INTEGER NOT NULL, " +
-                    " MINNUM INTEGER, " +
-                    " MAXNUM INTEGER, " +
+                    " MINWORDLENGTH INTEGER, " +
+                    " MAXWORDLENGTH INTEGER, " +
+                    " LINELENGTH INTEGER,  " +
+                    " AVGLENGTH DOUBLE, "+
                     " PRIMARY KEY (ID))";
             statement.execute(query);
 
-            query = "INSERT INTO RESULTS (ID, MINNUM, MAXNUM) VALUES(?, ?, ?)";
+            query="CREATE SEQUENCE id_sequence";
+            statement.execute(query);
+
+            query = "INSERT INTO RESULTS (ID, MINWORDLENGTH, MAXWORDLENGTH, LINELENGTH, AVGLENGTH) " +
+                    " VALUES(id_sequence.NEXTVAL, ?, ?, ?, ?)";
             insertStatement = connection.prepareStatement(query);
 
             IsDatabaseInitialized = true;
         }catch (SQLException e){
-            connection.close();
+            FinalizeDatabase();
             throw e;
         }
     }
 
-    public void AppendReCord(int id, int min, int max) throws SQLException{
+    public void AppendReCord(LineStatistics lineStatistics) throws SQLException{
         if(IsDatabaseInitialized)
         {
             try {
-                insertStatement.setInt(1, id);
-                insertStatement.setInt(2, min);
-                insertStatement.setInt(3, max);
+                insertStatement.setInt(1, lineStatistics.getMinWordLength());
+                insertStatement.setInt(2, lineStatistics.getMaxWordLength());
+                insertStatement.setInt(3, lineStatistics.getLineLength());
+                insertStatement.setDouble(4, lineStatistics.getAverageWordLength());
                 insertStatement.execute();
             }catch (SQLException e){
-                connection.close();
-                IsDatabaseInitialized=false;
+                FinalizeDatabase();
                 throw e;
             }
         }
@@ -64,19 +67,25 @@ public class H2DataBaseOperator {
                 String query = "SELECT * FROM RESULTS";
                 ResultSet resultSet = statement.executeQuery(query);
                 while (resultSet.next()) {
-                    System.out.println("Id " + resultSet.getInt(1) +
-                            " MINNUM " + resultSet.getInt(2) +
-                            " MAXNUM " + resultSet.getInt(3));
                     result.add(new ResultEntity(resultSet.getInt(1),
                                                 resultSet.getInt(2),
-                                                resultSet.getInt(3)));
+                                                resultSet.getInt(3),
+                                                resultSet.getInt(4),
+                                                resultSet.getDouble(5))
+                    );
                 }
             }catch (SQLException e){
-                connection.close();
-                IsDatabaseInitialized=false;
+                FinalizeDatabase();
                 throw e;
             }
         }
         return result;
+    }
+
+    public void FinalizeDatabase() throws SQLException{
+        if(IsDatabaseInitialized){
+            IsDatabaseInitialized=false;
+            connection.close();
+        }
     }
 }
