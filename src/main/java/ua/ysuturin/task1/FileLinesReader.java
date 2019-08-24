@@ -14,13 +14,15 @@ public class FileLinesReader {
     }
 
     public List<String> GetFileLines() throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(fileName));
         List<String> lines = new ArrayList<>();
 
-        while (scanner.hasNextLine() ){
-            String line = scanner.nextLine();
-            if(!line.isEmpty()) {
-                lines.add(line);
+        try  (Scanner scanner = new Scanner(new File(fileName)))
+        {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (!line.isEmpty()) {
+                    lines.add(line);
+                }
             }
         }
         return lines;
